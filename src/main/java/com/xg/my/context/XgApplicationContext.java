@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -164,4 +165,17 @@ public class XgApplicationContext extends XgDefaultListableBeanFactory implement
     public Object getBean(Class<?> beanClass) throws Exception {
         return this.getBean(beanClass.getName());
     }
+
+    public String[] getBeanDefinitionNames(){
+        return this.beanDefinitionMap.keySet().toArray(new String[this.beanWrapperMap.size()]);
+    }
+
+    public int getBeanDefinitionSize(){
+        return this.beanDefinitionMap.size();
+    }
+
+    public Properties getConfig(){
+        return this.reader.getConfig();
+    }
+
 }

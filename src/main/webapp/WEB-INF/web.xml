@@ -8,7 +8,7 @@
   <servlet>
     <servlet-name>xgMvc</servlet-name>
 
-    <servlet-class>com.xg.my.servlet.XgDispatcherServlet</servlet-class>
+    <servlet-class>com.xg.my.webmvc.XgDispatcherServlet</servlet-class>
 
     <init-param>
       <param-name>contextConfigLocation</param-name>
