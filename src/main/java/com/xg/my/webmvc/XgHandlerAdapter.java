@@ -75,7 +75,7 @@ public class XgHandlerAdapter {
 
         Object result = handlerMapping.getMethod().invoke(handlerMapping.getController(), paramValues);
 
-        if(result == null){ return null;}
+        if(result == null || result instanceof Void){ return null;}
 
         boolean isModeAndView = handlerMapping.getMethod().getReturnType() == XgModelAndView.class;
 

@@ -14,29 +14,11 @@ public class XgBeanWrapper {
     public XgBeanWrapper(Object wrapperInstance){
         this.wrapperInstance = wrapperInstance;
     }
-
-
-    public Object getWrapperInstance() {
-        return wrapperInstance;
+    public Object getWrapperInstance(){
+        return this.wrapperInstance;
     }
 
-    public void setWrapperInstance(Object wrapperInstance) {
-        this.wrapperInstance = wrapperInstance;
-    }
-
-    public Class<?> getWrapperClass() {
-        return this.wrapperInstance.getClass();
-    }
-
-    public void setWrapperClass(Class<?> wrapperClass) {
-        this.wrapperClass = wrapperClass;
-    }
-
-    @Override
-    public String toString() {
-        return "XgBeanWrapper{" +
-                "wrapperInstance=" + wrapperInstance +
-                ", wrapperClass=" + wrapperClass +
-                '}';
+    public Class<?> getWrapperClass(){
+        return this.getWrapperInstance().getClass();
     }
 }

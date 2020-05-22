@@ -128,7 +128,7 @@ public class XgDispatcherServlet extends HttpServlet {
 
                         XgRequestMapping requestMapping = method.getAnnotation(XgRequestMapping.class);
 
-                        String regex = ("/" + baseUrl + requestMapping.value().replaceAll("\\*", ".*").replaceAll("/+","/"));
+                        String regex = ("/" + baseUrl + requestMapping.value().replaceAll("\\*", ".*").replaceAll("/+","/").replaceAll("//","/"));
 
                         Pattern pattern = Pattern.compile(regex.replaceAll("//","/"));
 

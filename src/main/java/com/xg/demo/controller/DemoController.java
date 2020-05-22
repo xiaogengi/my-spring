@@ -1,18 +1,15 @@
 package com.xg.demo.controller;
 
-import com.xg.demo.server.DemoService;
+import com.xg.demo.server.IDemoService;
 import com.xg.my.annotation.XgAutowired;
 import com.xg.my.annotation.XgController;
 import com.xg.my.annotation.XgRequestMapping;
 import com.xg.my.webmvc.XgModelAndView;
 
-import javax.crypto.interfaces.PBEKey;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @program: my-spring
@@ -24,12 +21,11 @@ import java.util.List;
 public class DemoController {
 
     @XgAutowired
-    private DemoService demoService;
+    private IDemoService IDemoService;
 
     @XgRequestMapping("/demo")
-    public String demo(HttpServletResponse response) throws IOException {
-        demoService.demo();
-        response.getWriter().write("hi Demo");
+    public String demo() throws Exception {
+        IDemoService.demo();
         return "";
     }
 

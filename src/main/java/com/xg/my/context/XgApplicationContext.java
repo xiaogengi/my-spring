@@ -3,12 +3,18 @@ package com.xg.my.context;
 import com.xg.my.annotation.XgAutowired;
 import com.xg.my.annotation.XgController;
 import com.xg.my.annotation.XgService;
+import com.xg.my.aop.XgAopConfig;
+import com.xg.my.aop.XgAopProxy;
+import com.xg.my.aop.handler.XgCglibAopProxy;
+import com.xg.my.aop.handler.XgJdkAopProxy;
+import com.xg.my.aop.support.XgAdvisedSupport;
 import com.xg.my.beans.XgBeanWrapper;
 import com.xg.my.beans.config.XgBeanDefinition;
 import com.xg.my.beans.config.XgBeanPostProcessor;
 import com.xg.my.context.support.XgBeanDefinitionReader;
 import com.xg.my.context.support.XgDefaultListableBeanFactory;
 import com.xg.my.core.XgBeanFactory;
+import org.omg.CORBA.OBJ_ADAPTER;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -58,7 +64,7 @@ public class XgApplicationContext extends XgDefaultListableBeanFactory implement
             this.beanWrapperMap.put(beanName, beanWrapper);
             //初始化bean后调用一次
             beanPostProcessor.postProcessAfterInitialization(instance, beanName);
-            populateBean(beanName, instance);
+            populateBean(beanName, beanWrapper);
             return this.beanWrapperMap.get(beanName).getWrapperInstance();
         } catch (Exception e){
             e.printStackTrace();
@@ -118,8 +124,9 @@ public class XgApplicationContext extends XgDefaultListableBeanFactory implement
         }
     }
 
-    private void populateBean(String beanName, Object instance) {
-        Class<?> clazz = instance.getClass();
+    private void populateBean(String beanName, XgBeanWrapper beanWrapper) {
+        Class<?> clazz = beanWrapper.getWrapperClass();
+        Object instance = beanWrapper.getWrapperInstance();
         //如果没有Controller 没有Service 就不注入
         if(!(clazz.isAnnotationPresent(XgController.class) || clazz.isAnnotationPresent(XgService.class))){
             return;
@@ -153,12 +160,44 @@ public class XgApplicationContext extends XgDefaultListableBeanFactory implement
             }else{
                 Class<?> clazz = Class.forName(className);
                 instance = clazz.newInstance();
+
+
+                XgAdvisedSupport config = instantionAopConfig(beanDefinition);
+                config.setTargetClass(clazz);
+                config.setTarget(instance);
+
+                if(config.pointCutMatch()){
+                    instance = createProxy(config).getProxy();
+                }
+
+                this.singletonBeanCacheMap.put(className, instance);
                 this.singletonBeanCacheMap.put(beanDefinition.getFactoryBeanName(), instance);
             }
         } catch (Exception e){
             e.printStackTrace();
         }
         return instance;
+    }
+
+    private XgAopProxy createProxy(XgAdvisedSupport config) {
+        Class targetClass = config.getTargetClass();
+        if(targetClass.getInterfaces().length > 0){
+            return new XgJdkAopProxy(config);
+        }
+        return new XgCglibAopProxy(config);
+    }
+
+    private XgAdvisedSupport instantionAopConfig(XgBeanDefinition beanDefinition) {
+        XgAopConfig aopConfig = new XgAopConfig();
+
+        aopConfig.setPointCut(reader.getConfig().getProperty("pointCut"));
+        aopConfig.setAspectClass(reader.getConfig().getProperty("aspectClass"));
+        aopConfig.setAspectBefore(reader.getConfig().getProperty("aspectBefore"));
+        aopConfig.setAspectAfter(reader.getConfig().getProperty("aspectAfter"));
+        aopConfig.setAspectAfterThrow(reader.getConfig().getProperty("aspectAfterThrow"));
+        aopConfig.setAspectAfterThrowingName(reader.getConfig().getProperty("aspectAfterThrowingName"));
+
+        return new XgAdvisedSupport(aopConfig);
     }
 
     @Override
